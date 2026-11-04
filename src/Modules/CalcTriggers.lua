@@ -1469,3 +1469,126 @@ function calcs.triggers(env, actor)
         end
 	end
 end
+
+-- PoE2 meta gems build Energy and trigger all their socketed Spells on reaching maximum Energy.
+-- Modelled so far: Cast on Critical. Its socketed Spells fire at
+--   (Critical Hits per second of the skill that crits most often) / (Critical Hits needed to fill maximum Energy)
+-- Energy past the maximum is discarded, so one Critical Hit triggers at most once.
+
+-- The Energy-building meta gem a skill is socketed in, if any
+local function energyMetaGem(env, skill)
+	if skill.skillTypes[SkillType.Meta] or not skill.socketGroup then
+		return
+	end
+	for _, other in ipairs(env.player.activeSkillList) do
+		if other ~= skill and other.socketGroup == skill.socketGroup and other.skillTypes[SkillType.Meta]
+			and (other.skillData.energyPerPowerOnCrit or other.skillData.maximumEnergy) then
+			return other
+		end
+	end
+end
+
+function calcs.metaEnergyTrigger(env, actor)
+	local skill = actor.mainSkill
+	local meta = actor == env.player and skill and skill.skillTypes and skill.skillTypes[SkillType.Spell] and energyMetaGem(env, skill)
+	if not meta or not meta.skillData.energyPerPowerOnCrit then
+		return
+	end
+	local output = actor.output
+	local breakdown = actor.breakdown
+
+	-- Maximum Energy: fixed, or 1 per X ms of base cast time of every socketed Spell (the meta gem gives its Spells X)
+	local maxEnergy = meta.skillData.maximumEnergy
+	local castTime, msPerEnergy = 0, nil
+	if not maxEnergy then
+		maxEnergy = 0
+		for _, other in ipairs(env.player.activeSkillList) do
+			if other ~= meta and other.socketGroup == meta.socketGroup and other.skillData.maximumEnergyPerMsCastTime then
+				msPerEnergy = other.skillData.maximumEnergyPerMsCastTime
+				castTime = castTime + (other.activeEffect.grantedEffect.castTime or 0)
+				maxEnergy = maxEnergy + (other.activeEffect.grantedEffect.castTime or 0) * 1000 / msPerEnergy
+			end
+		end
+	end
+	local maxEnergyMod = calcLib.mod(meta.skillModList, meta.skillCfg, "MaximumEnergy")
+	maxEnergy = maxEnergy * maxEnergyMod
+	output.MetaMaximumEnergy = maxEnergy
+
+	-- The skill outside meta gems that Critically Hits most often
+	local source, sourceCritRate, sourceOutput = nil, 0, nil
+	for _, other in ipairs(env.player.activeSkillList) do
+		if other ~= skill and not other.skillTypes[SkillType.Meta] and (other.skillTypes[SkillType.Attack] or other.skillTypes[SkillType.Spell])
+			and not energyMetaGem(env, other) and not (other.skillFlags and other.skillFlags.disable) then
+			local uuid = cacheSkillUUID(other, env)
+			if not GlobalCache.cachedData[env.mode][uuid] or env.mode == "CALCULATOR" then
+				calcs.buildActiveSkill(env, env.mode, other, uuid)
+			end
+			local cached = GlobalCache.cachedData[env.mode][uuid]
+			local critRate = cached and (cached.HitSpeed or cached.Speed or 0) * (cached.CritChance or 0) / 100 or 0
+			if critRate > sourceCritRate then
+				source, sourceCritRate, sourceOutput = other, critRate, cached.Env.player.output
+			end
+		end
+	end
+
+	skill.skillData.triggered = true
+	skill.infoMessage = meta.activeEffect.grantedEffect.name .. "'s Trigger: " .. (source and source.activeEffect.grantedEffect.name or "no skill that Critically Hits")
+	if not source then
+		skill.skillData.triggerRate = 0
+		output.MetaTriggerRate = 0
+		return
+	end
+
+	-- Energy per Critical Hit: per enemy Power, modified by how much of the enemy's Ailment Threshold the Critical Hit deals
+	local power = m_max(env.player.modDB:Sum("BASE", nil, "Multiplier:EnemyPower"), 1)
+	local critHit = sourceOutput.AverageCritHit or 0
+	local threshold = sourceOutput.EnemyAilmentThreshold or 1
+	local hitStrength = critHit / threshold
+	local energyMod = calcLib.mod(meta.skillModList, meta.skillCfg, "EnergyGenerated")
+	local energyPerCrit = m_floor(meta.skillData.energyPerPowerOnCrit * power * hitStrength * energyMod * 100) / 100
+	local critsToTrigger = energyPerCrit > 0 and m_ceil(maxEnergy / energyPerCrit) or m_huge
+	local triggerRate = sourceCritRate / critsToTrigger
+	-- Triggered Spells still have their cooldowns
+	local cooldown = calcSkillCooldown(skill.skillModList, skill.skillCfg, skill.skillData)
+	local cooldownCap = cooldown and cooldown > 0 and 1 / cooldown
+	local capped = cooldownCap and triggerRate > cooldownCap
+	if capped then
+		triggerRate = cooldownCap
+	end
+
+	skill.skillData.triggerRate = triggerRate
+	output.MetaEnergyPerCrit = energyPerCrit
+	output.MetaCritsToTrigger = critsToTrigger
+	output.MetaSourceCritRate = sourceCritRate
+	output.MetaTriggerRate = triggerRate
+	if breakdown then
+		if meta.skillData.maximumEnergy then
+			breakdown.MetaMaximumEnergy = {
+				s_format("%d ^8(fixed maximum Energy)", meta.skillData.maximumEnergy),
+			}
+		else
+			breakdown.MetaMaximumEnergy = {
+				s_format("%.2fs ^8(base cast time of socketed Spells)", castTime),
+				s_format("x 1000 / %d ^8(1 maximum Energy per %d ms)", msPerEnergy or 0, msPerEnergy or 0),
+			}
+		end
+		t_insert(breakdown.MetaMaximumEnergy, s_format("x %.2f ^8(increased/reduced maximum Energy)", maxEnergyMod))
+		t_insert(breakdown.MetaMaximumEnergy, s_format("= %.2f", maxEnergy))
+		breakdown.MetaEnergyPerCrit = {
+			s_format("%.2f ^8(base Energy per enemy Power)", meta.skillData.energyPerPowerOnCrit),
+			s_format("x %d ^8(enemy Power)", power),
+			s_format("x %.3f ^8(%s's average Critical Hit %.0f / enemy Ailment Threshold %.0f)", hitStrength, source.activeEffect.grantedEffect.name, critHit, threshold),
+			s_format("x %.2f ^8(increased/more Energy)", energyMod),
+			s_format("= %.2f ^8(rounded down to 0.01)", energyPerCrit),
+		}
+		breakdown.MetaTriggerRate = {
+			s_format("%.2f ^8(%s Critical Hits per second)", sourceCritRate, source.activeEffect.grantedEffect.name),
+			s_format("/ %d ^8(Critical Hits to reach %.2f maximum Energy; excess Energy is lost)", critsToTrigger, maxEnergy),
+		}
+		if capped then
+			t_insert(breakdown.MetaTriggerRate, s_format("= %.2f ^8(capped by %s's %.2fs cooldown)", triggerRate, skill.activeEffect.grantedEffect.name, cooldown))
+		else
+			t_insert(breakdown.MetaTriggerRate, s_format("= %.2f ^8triggers per second", triggerRate))
+		end
+	end
+end

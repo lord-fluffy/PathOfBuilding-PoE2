@@ -4584,6 +4584,7 @@ function calcs.offence(env, actor, activeSkill)
 
 		-- Calculate average damage and final DPS
 		output.AverageHit = totalHitAvg * (1 - output.CritChance / 100) + totalCritAvg * output.CritChance / 100
+		output.AverageCritHit = totalCritAvg
 		if skillFlags.monsterExplode then
 			output.AverageHitToMonsterLifePercentage = output.AverageHit / monsterLife * 100
 			if skillData.hitChanceIsExplodeChance then
@@ -4746,6 +4747,7 @@ function calcs.offence(env, actor, activeSkill)
 		combineStat("CritChance", "CRIT")
 		combineStat("PreEffectiveCritMultiplier", "AVERAGE")
 		combineStat("CritMultiplier", "AVERAGE")
+		combineStat("AverageCritHit", "AVERAGE")
 		combineStat("CritBifurcates", "AVERAGE")
 		combineStat("AverageDamage", "DPS")
 		combineStat("PvpAverageDamage", "DPS")
