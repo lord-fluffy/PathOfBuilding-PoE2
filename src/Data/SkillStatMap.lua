@@ -242,18 +242,6 @@ return function(mod, flag, skill)
 	skill("energyPerPowerOnMeleeHit", nil),
 	div = 100,
 },
-["cast_on_shock_gain_X_centienergy_per_monster_power_on_shock"] = {
-	skill("energyPerPowerOnShock", nil),
-	div = 100,
-},
-["cast_on_ignite_gain_X_centienergy_per_monster_power_on_ignite"] = {
-	skill("energyPerPowerOnIgnite", nil),
-	div = 100,
-},
-["cast_on_freeze_gain_X_centienergy_per_monster_power_on_freeze"] = {
-	skill("energyPerPowerOnFreeze", nil),
-	div = 100,
-},
 ["generic_ongoing_trigger_1_maximum_energy_per_Xms_total_cast_time"] = {
 	skill("maximumEnergyPerMsCastTime", nil),
 },
