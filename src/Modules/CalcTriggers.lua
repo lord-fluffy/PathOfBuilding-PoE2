@@ -1548,6 +1548,13 @@ function calcs.metaEnergyTrigger(env, actor)
 	local energyPerCrit = m_floor(meta.skillData.energyPerPowerOnCrit * power * hitStrength * energyMod * 100) / 100
 	local critsToTrigger = energyPerCrit > 0 and m_ceil(maxEnergy / energyPerCrit) or m_huge
 	local triggerRate = sourceCritRate / critsToTrigger
+	-- Triggered Spells still have their cooldowns
+	local cooldown = calcSkillCooldown(skill.skillModList, skill.skillCfg, skill.skillData)
+	local cooldownCap = cooldown and cooldown > 0 and 1 / cooldown
+	local capped = cooldownCap and triggerRate > cooldownCap
+	if capped then
+		triggerRate = cooldownCap
+	end
 
 	skill.skillData.triggerRate = triggerRate
 	output.MetaEnergyPerCrit = energyPerCrit
@@ -1577,7 +1584,11 @@ function calcs.metaEnergyTrigger(env, actor)
 		breakdown.MetaTriggerRate = {
 			s_format("%.2f ^8(%s Critical Hits per second)", sourceCritRate, source.activeEffect.grantedEffect.name),
 			s_format("/ %d ^8(Critical Hits to reach %.2f maximum Energy; excess Energy is lost)", critsToTrigger, maxEnergy),
-			s_format("= %.2f ^8triggers per second", triggerRate),
 		}
+		if capped then
+			t_insert(breakdown.MetaTriggerRate, s_format("= %.2f ^8(capped by %s's %.2fs cooldown)", triggerRate, skill.activeEffect.grantedEffect.name, cooldown))
+		else
+			t_insert(breakdown.MetaTriggerRate, s_format("= %.2f ^8triggers per second", triggerRate))
+		end
 	end
 end
