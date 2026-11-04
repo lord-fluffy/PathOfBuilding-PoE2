@@ -185,7 +185,7 @@ c["+1% to Maximum Fire Resistance while Shapeshifted"]={{[1]={[1]={type="Conditi
 c["+1% to Maximum Lightning Resistance"]={{[1]={flags=0,keywordFlags=0,name="LightningResistMax",type="BASE",value=1}},nil}
 c["+1% to Maximum Lightning Resistance per 3 Green Support Gems Socketed"]={{[1]={[1]={div=3,type="Multiplier",var="GreenSupportGems"},flags=0,keywordFlags=0,name="LightningResistMax",type="BASE",value=1}},nil}
 c["+1% to Maximum Lightning Resistance while Shapeshifted"]={{[1]={[1]={type="Condition",var="Shapeshifted"},flags=0,keywordFlags=0,name="LightningResistMax",type="BASE",value=1}},nil}
-c["+1% to Maximum Resistances of each Elemental Damage Type you have been Hit with Recently"]={{[1]={flags=0,keywordFlags=0,name="ElementalDamage",type="BASE",value=1}}," Maximum Resistances of each  Type you have been Hit with Recently "}
+c["+1% to Maximum Resistances of each Elemental Damage Type you have been Hit with Recently"]={{[1]={[1]={type="Condition",var="HitByFireDamageRecently"},flags=0,keywordFlags=0,name="FireResistMax",type="BASE",value=1},[2]={[1]={type="Condition",var="HitByColdDamageRecently"},flags=0,keywordFlags=0,name="ColdResistMax",type="BASE",value=1},[3]={[1]={type="Condition",var="HitByLightningDamageRecently"},flags=0,keywordFlags=0,name="LightningResistMax",type="BASE",value=1}},nil}
 c["+1% to all Maximum Elemental Resistances"]={{[1]={flags=0,keywordFlags=0,name="ElementalResistMax",type="BASE",value=1}},nil}
 c["+1% to all Maximum Elemental Resistances if you have at"]={{[1]={flags=0,keywordFlags=0,name="ElementalResistMax",type="BASE",value=1}},"  if you have at "}
 c["+1% to all Maximum Elemental Resistances if you have at least 5 Red, Green and Blue Support Gems Socketed"]={{[1]={[1]={threshold=5,type="MultiplierThreshold",var="RedSupportGems"},[2]={threshold=5,type="MultiplierThreshold",var="GreenSupportGems"},[3]={threshold=5,type="MultiplierThreshold",var="BlueSupportGems"},flags=0,keywordFlags=0,name="ElementalResistMax",type="BASE",value=1}},nil}
@@ -352,7 +352,7 @@ c["+140 to Armour"]={{[1]={flags=0,keywordFlags=0,name="Armour",type="BASE",valu
 c["+140 to maximum Life"]={{[1]={flags=0,keywordFlags=0,name="Life",type="BASE",value=140}},nil}
 c["+144 to Stun Threshold"]={{[1]={flags=0,keywordFlags=0,name="StunThreshold",type="BASE",value=144}},nil}
 c["+145 to maximum Life"]={{[1]={flags=0,keywordFlags=0,name="Life",type="BASE",value=145}},nil}
-c["+15 maximum Rage if you've used a Skill that Requires Glory in the past 20 seconds"]={{[1]={flags=0,keywordFlags=0,name="MaximumRage",type="BASE",value=15}},"  if you've used a Skill that Requires Glory in the past 20 seconds "}
+c["+15 maximum Rage if you've used a Skill that Requires Glory in the past 20 seconds"]={{[1]={[1]={type="Condition",var="UsedGlorySkillRecently"},flags=0,keywordFlags=0,name="MaximumRage",type="BASE",value=15}},nil}
 c["+15 to Dexterity"]={{[1]={flags=0,keywordFlags=0,name="Dex",type="BASE",value=15}},nil}
 c["+15 to Dexterity and Intelligence"]={{[1]={flags=0,keywordFlags=0,name="Dex",type="BASE",value=15},[2]={flags=0,keywordFlags=0,name="Int",type="BASE",value=15},[3]={flags=0,keywordFlags=0,name="DexInt",type="BASE",value=15}},nil}
 c["+15 to Evasion Rating"]={{[1]={flags=0,keywordFlags=0,name="Evasion",type="BASE",value=15}},nil}
@@ -1238,7 +1238,7 @@ c["+88 to Armour"]={{[1]={flags=0,keywordFlags=0,name="Armour",type="BASE",value
 c["+88% to Cold Resistance when Socketed with a Green Gem"]={{[1]={[1]={keyword="dexterity",slotName="{SlotName}",sockets={[1]=1},type="SocketedIn"},flags=0,keywordFlags=0,name="SocketProperty",type="LIST",value={value={flags=0,keywordFlags=0,name="ColdResist",type="BASE",value=88}}}},nil}
 c["+88% to Fire Resistance when Socketed with a Red Gem"]={{[1]={[1]={keyword="strength",slotName="{SlotName}",sockets={[1]=1},type="SocketedIn"},flags=0,keywordFlags=0,name="SocketProperty",type="LIST",value={value={flags=0,keywordFlags=0,name="FireResist",type="BASE",value=88}}}},nil}
 c["+88% to Lightning Resistance when Socketed with a Blue Gem"]={{[1]={[1]={keyword="intelligence",slotName="{SlotName}",sockets={[1]=1},type="SocketedIn"},flags=0,keywordFlags=0,name="SocketProperty",type="LIST",value={value={flags=0,keywordFlags=0,name="LightningResist",type="BASE",value=88}}}},nil}
-c["+9 maximum Rage if you've used a Skill that Requires Glory in the past 20 seconds"]={{[1]={flags=0,keywordFlags=0,name="MaximumRage",type="BASE",value=9}},"  if you've used a Skill that Requires Glory in the past 20 seconds "}
+c["+9 maximum Rage if you've used a Skill that Requires Glory in the past 20 seconds"]={{[1]={[1]={type="Condition",var="UsedGlorySkillRecently"},flags=0,keywordFlags=0,name="MaximumRage",type="BASE",value=9}},nil}
 c["+9 to Dexterity and Intelligence"]={{[1]={flags=0,keywordFlags=0,name="Dex",type="BASE",value=9},[2]={flags=0,keywordFlags=0,name="Int",type="BASE",value=9},[3]={flags=0,keywordFlags=0,name="DexInt",type="BASE",value=9}},nil}
 c["+9 to Maximum Rage"]={{[1]={flags=0,keywordFlags=0,name="MaximumRage",type="BASE",value=9}},nil}
 c["+9 to Strength and Dexterity"]={{[1]={flags=0,keywordFlags=0,name="Str",type="BASE",value=9},[2]={flags=0,keywordFlags=0,name="Dex",type="BASE",value=9},[3]={flags=0,keywordFlags=0,name="StrDex",type="BASE",value=9}},nil}
@@ -1642,7 +1642,7 @@ c["10% increased Magnitude of Chill you inflict"]={{[1]={flags=0,keywordFlags=0,
 c["10% increased Magnitude of Non-Damaging Ailments you inflict"]={{[1]={flags=0,keywordFlags=0,name="EnemyShockMagnitude",type="INC",value=10},[2]={flags=0,keywordFlags=0,name="EnemyChillMagnitude",type="INC",value=10},[3]={flags=0,keywordFlags=0,name="EnemyFreezeBuildup",type="INC",value=10}},nil}
 c["10% increased Magnitude of Poison you inflict"]={{[1]={flags=0,keywordFlags=2097152,name="AilmentMagnitude",type="INC",value=10}},nil}
 c["10% increased Magnitude of Shock you inflict"]={{[1]={flags=0,keywordFlags=0,name="EnemyShockMagnitude",type="INC",value=10}},nil}
-c["10% increased Magnitudes of Non-Curse Auras from your Skills"]={{[1]={flags=0,keywordFlags=0,name="Magnitude",type="INC",value=10}},"  of Non-Curse Auras from your Skills "}
+c["10% increased Magnitudes of Non-Curse Auras from your Skills"]={{[1]={[1]={skillType=39,type="SkillType"},[2]={neg=true,skillType=69,type="SkillType"},flags=0,keywordFlags=0,name="AuraEffect",type="INC",value=10}},nil}
 c["10% increased Mana Cost Efficiency"]={{[1]={flags=0,keywordFlags=0,name="ManaCostEfficiency",type="INC",value=10}},nil}
 c["10% increased Mana Cost Efficiency if you have Dodge Rolled Recently"]={{[1]={flags=0,keywordFlags=0,name="ManaCostEfficiency",type="INC",value=10}},"  if you have Dodge Rolled Recently "}
 c["10% increased Mana Cost of Skills"]={{[1]={flags=0,keywordFlags=0,name="ManaCost",type="INC",value=10}},nil}
@@ -2008,7 +2008,7 @@ c["12% increased Lightning Damage"]={{[1]={flags=0,keywordFlags=0,name="Lightnin
 c["12% increased Magnitude of Ailments you inflict"]={{[1]={flags=0,keywordFlags=0,name="AilmentMagnitude",type="INC",value=12}},nil}
 c["12% increased Magnitude of Chill you inflict"]={{[1]={flags=0,keywordFlags=0,name="EnemyChillMagnitude",type="INC",value=12}},nil}
 c["12% increased Magnitude of Poison you inflict"]={{[1]={flags=0,keywordFlags=2097152,name="AilmentMagnitude",type="INC",value=12}},nil}
-c["12% increased Magnitudes of Non-Curse Auras from your Skills"]={{[1]={flags=0,keywordFlags=0,name="Magnitude",type="INC",value=12}},"  of Non-Curse Auras from your Skills "}
+c["12% increased Magnitudes of Non-Curse Auras from your Skills"]={{[1]={[1]={skillType=39,type="SkillType"},[2]={neg=true,skillType=69,type="SkillType"},flags=0,keywordFlags=0,name="AuraEffect",type="INC",value=12}},nil}
 c["12% increased Mana Cost Efficiency"]={{[1]={flags=0,keywordFlags=0,name="ManaCostEfficiency",type="INC",value=12}},nil}
 c["12% increased Mana Regeneration Rate"]={{[1]={flags=0,keywordFlags=0,name="ManaRegen",type="INC",value=12}},nil}
 c["12% increased Melee Critical Hit Chance"]={{[1]={flags=256,keywordFlags=0,name="CritChance",type="INC",value=12}},nil}
@@ -2113,7 +2113,7 @@ c["13% increased Life Recovery rate"]={{[1]={flags=0,keywordFlags=0,name="LifeRe
 c["13% increased Light Radius"]={{[1]={flags=0,keywordFlags=0,name="LightRadius",type="INC",value=13}},nil}
 c["13% increased Magnitude of Poison you inflict"]={{[1]={flags=0,keywordFlags=2097152,name="AilmentMagnitude",type="INC",value=13}},nil}
 c["13% increased Magnitude of Shock you inflict"]={{[1]={flags=0,keywordFlags=0,name="EnemyShockMagnitude",type="INC",value=13}},nil}
-c["13% increased Magnitudes of Non-Curse Auras from your Skills"]={{[1]={flags=0,keywordFlags=0,name="Magnitude",type="INC",value=13}},"  of Non-Curse Auras from your Skills "}
+c["13% increased Magnitudes of Non-Curse Auras from your Skills"]={{[1]={[1]={skillType=39,type="SkillType"},[2]={neg=true,skillType=69,type="SkillType"},flags=0,keywordFlags=0,name="AuraEffect",type="INC",value=13}},nil}
 c["13% increased Movement Speed"]={{[1]={flags=0,keywordFlags=0,name="MovementSpeed",type="INC",value=13}},nil}
 c["13% increased Parried Debuff Duration"]={{[1]={flags=0,keywordFlags=0,name="ParryDebuffDuration",type="INC",value=13}},nil}
 c["13% increased Physical Damage with Ranged Weapons"]={{[1]={flags=8589934596,keywordFlags=0,name="PhysicalDamage",type="INC",value=13}},nil}
@@ -2923,7 +2923,7 @@ c["20% increased Magnitude of Impales inflicted with Spells"]={{[1]={flags=0,key
 c["20% increased Magnitude of Non-Damaging Ailments you inflict with Critical Hits"]={{[1]={[1]={type="Condition",var="CriticalStrike"},flags=0,keywordFlags=0,name="EnemyShockMagnitude",type="INC",value=20},[2]={[1]={type="Condition",var="CriticalStrike"},flags=0,keywordFlags=0,name="EnemyChillMagnitude",type="INC",value=20},[3]={[1]={type="Condition",var="CriticalStrike"},flags=0,keywordFlags=0,name="EnemyFreezeBuildup",type="INC",value=20}},nil}
 c["20% increased Magnitude of Poison you inflict"]={{[1]={flags=0,keywordFlags=2097152,name="AilmentMagnitude",type="INC",value=20}},nil}
 c["20% increased Magnitude of Shock you inflict"]={{[1]={flags=0,keywordFlags=0,name="EnemyShockMagnitude",type="INC",value=20}},nil}
-c["20% increased Magnitudes of Non-Curse Auras from your Skills"]={{[1]={flags=0,keywordFlags=0,name="Magnitude",type="INC",value=20}},"  of Non-Curse Auras from your Skills "}
+c["20% increased Magnitudes of Non-Curse Auras from your Skills"]={{[1]={[1]={skillType=39,type="SkillType"},[2]={neg=true,skillType=69,type="SkillType"},flags=0,keywordFlags=0,name="AuraEffect",type="INC",value=20}},nil}
 c["20% increased Mana Cost Efficiency"]={{[1]={flags=0,keywordFlags=0,name="ManaCostEfficiency",type="INC",value=20}},nil}
 c["20% increased Mana Flask Charges gained"]={{[1]={flags=0,keywordFlags=0,name="ManaFlaskChargesGained",type="INC",value=20}},nil}
 c["20% increased Mana Regeneration Rate"]={{[1]={flags=0,keywordFlags=0,name="ManaRegen",type="INC",value=20}},nil}
@@ -3558,7 +3558,7 @@ c["3% increased Fire Damage per Endurance Charge consumed Recently"]={{[1]={[1]=
 c["3% increased Flask Effect Duration per 25 Tribute"]={{[1]={[1]={actor="parent",div=25,stat="Tribute",type="PerStat"},flags=0,keywordFlags=0,name="FlaskDuration",type="INC",value=3}},nil}
 c["3% increased Global Critical Hit Chance per Level"]={{[1]={[1]={type="Global"},[2]={type="Multiplier",var="Level"},flags=0,keywordFlags=0,name="CritChance",type="INC",value=3}},nil}
 c["3% increased Magnitude of Non-Damaging Ailments you inflict per 10 Devotion"]={{[1]={[1]={actor="parent",div=10,stat="Devotion",type="PerStat"},flags=0,keywordFlags=0,name="EnemyShockMagnitude",type="INC",value=3},[2]={[1]={actor="parent",div=10,stat="Devotion",type="PerStat"},flags=0,keywordFlags=0,name="EnemyChillMagnitude",type="INC",value=3},[3]={[1]={actor="parent",div=10,stat="Devotion",type="PerStat"},flags=0,keywordFlags=0,name="EnemyFreezeBuildup",type="INC",value=3}},nil}
-c["3% increased Magnitudes of Non-Curse Auras from your Skills"]={{[1]={flags=0,keywordFlags=0,name="Magnitude",type="INC",value=3}},"  of Non-Curse Auras from your Skills "}
+c["3% increased Magnitudes of Non-Curse Auras from your Skills"]={{[1]={[1]={skillType=39,type="SkillType"},[2]={neg=true,skillType=69,type="SkillType"},flags=0,keywordFlags=0,name="AuraEffect",type="INC",value=3}},nil}
 c["3% increased Mana Reservation Efficiency of Skills"]={{[1]={flags=0,keywordFlags=0,name="ManaReservationEfficiency",type="INC",value=3}},nil}
 c["3% increased Melee Attack Speed"]={{[1]={flags=257,keywordFlags=0,name="Speed",type="INC",value=3}},nil}
 c["3% increased Movement Speed"]={{[1]={flags=0,keywordFlags=0,name="MovementSpeed",type="INC",value=3}},nil}
@@ -7952,7 +7952,7 @@ c["Grants Level 25 Vaal Impurity of Lightning Skill"]={nil,"Grants Level 25 Vaal
 c["Grants Level 30 Precision Skill"]={nil,"Grants Level 30 Precision Skill "}
 c["Grants Level 30 Reckoning Skill"]={nil,"Grants Level 30 Reckoning Skill "}
 c["Grants Malachai's Endurance, Frenzy and Power for 6 seconds each, in sequence"]={nil,"Grants Malachai's Endurance, Frenzy and Power for 6 seconds each, in sequence "}
-c["Grants Onslaught during effect"]={nil,"Grants Onslaught during effect "}
+c["Grants Onslaught during effect"]={{[1]={flags=0,keywordFlags=0,name="Condition:Onslaught",type="FLAG",value=true}},nil}
 c["Grants Sands of Time"]={nil,"Grants Sands of Time "}
 c["Grants Skill: Acidic Concoction"]={{[1]={flags=0,keywordFlags=0,name="ExtraSkill",type="LIST",value={level=1,skillId="AcidicConcoctionPlayer"}}},nil}
 c["Grants Skill: Align Fate"]={{[1]={flags=0,keywordFlags=0,name="ExtraSkill",type="LIST",value={level=1,skillId="AlignFatePlayer"}}},nil}
@@ -8413,9 +8413,7 @@ c["Leech Life 20% slower"]={{[1]={flags=0,keywordFlags=0,name="LifeLeechRate",ty
 c["Leech Life 23% slower"]={{[1]={flags=0,keywordFlags=0,name="LifeLeechRate",type="INC",value=-23}},nil}
 c["Leech Life 5% slower"]={{[1]={flags=0,keywordFlags=0,name="LifeLeechRate",type="INC",value=-5}},nil}
 c["Leech Life 50% faster"]={{[1]={flags=0,keywordFlags=0,name="LifeLeechRate",type="INC",value=50}},nil}
-c["Leech Life 67% less quickly"]={nil,"Leech Life 67% less quickly "}
-c["Leech Life 67% less quickly Cannot Recover Life other than from Leech"]={nil,"Leech Life 67% less quickly Cannot Recover Life other than from Leech "}
-c["Leech Life 67% less quickly Cannot Recover Life other than from Leech Life Leech effects are not removed when Unreserved Life is Filled"]={nil,"Leech Life 67% less quickly Cannot Recover Life other than from Leech Life Leech effects are not removed when Unreserved Life is Filled "}
+c["Leech Life 67% less quickly"]={{[1]={flags=0,keywordFlags=0,name="LifeLeechRate",type="MORE",value=-67}},nil}
 c["Leech Life 750% faster"]={{[1]={flags=0,keywordFlags=0,name="LifeLeechRate",type="INC",value=750}},nil}
 c["Leech Life 8% faster"]={{[1]={flags=0,keywordFlags=0,name="LifeLeechRate",type="INC",value=8}},nil}
 c["Leech Life 8% slower"]={{[1]={flags=0,keywordFlags=0,name="LifeLeechRate",type="INC",value=-8}},nil}
@@ -9983,9 +9981,7 @@ c["Your Offerings can target Enemies in Culling range Your Offerings affect you 
 c["Your Offerings can target Enemies in Culling range Your Offerings affect you instead of your Minions Offerings created by Culling Enemies have 1% increased Effect per Power of Culled Enemy"]={nil,"Your Offerings can target Enemies in Culling range Your Offerings affect you instead of your Minions Offerings created by Culling Enemies have 1% increased Effect per Power of Culled Enemy "}
 c["Your Spells are disabled"]={{[1]={[1]={skillType=2,type="SkillType"},flags=0,keywordFlags=0,name="DisableSkill",type="FLAG",value=true}},nil}
 c["Your Spells have Culling Strike"]={{[1]={flags=2,keywordFlags=0,name="CanCull",type="FLAG",value=1}},nil}
-c["Your Totem Limit is doubled"]={{},"Your  Limit  "}
-c["Your Totem Limit is doubled No Charge requirement for placing Totems"]={{},"Your  Limit  No Charge requirement for placing Totems "}
-c["Your Totem Limit is doubled No Charge requirement for placing Totems Totems reserve 75 Spirit each"]={{[1]={[1]={globalLimit=100,globalLimitKey="SpiritDoubledLimit",type="Multiplier",var="SpiritDoubled"},flags=0,keywordFlags=16384,name="Spirit",type="MORE",value=100},[2]={flags=0,keywordFlags=16384,name="Multiplier:SpiritDoubled",type="OVERRIDE",value=1}},"Your  Limit  No Charge requirement for placing Totems Totems reserve 75  each "}
+c["Your Totem Limit is doubled"]={{[1]={flags=0,keywordFlags=0,name="TotemLimitDoubled",type="FLAG",value=true}},nil}
 c["Your base Energy Shield Recharge Delay is 10 seconds"]={{[1]={flags=0,keywordFlags=0,name="EnergyShieldRechargeBase",type="OVERRIDE",value=10}},nil}
 c["Your maximum Energy Shield is equal to 250% of your Strength"]={{[1]={[1]={percent=250,stat="Str",type="PercentStat"},flags=0,keywordFlags=0,name="EnergyShield",type="OVERRIDE",value=1}},nil}
 c["Your maximum Energy Shield is equal to 300% of your Strength"]={{[1]={[1]={percent=300,stat="Str",type="PercentStat"},flags=0,keywordFlags=0,name="EnergyShield",type="OVERRIDE",value=1}},nil}
@@ -10000,6 +9996,7 @@ end)();(function()
 c["Zealot's Oath during Effect"]={{[1]={[1]={type="Condition",var="UsingFlask"},flags=0,keywordFlags=0,name="ZealotsOath",type="FLAG",value=true}},nil}
 c["additional Elemental Infusion of the same type"]={nil,"additional Elemental Infusion of the same type "}
 c["additional Rune-only sockets:"]={{},nil}
+end)();(function()
 c["as being boosted by Chilled Ground"]={nil,"as being boosted by Chilled Ground "}
 c["as being boosted by Ignited Ground"]={nil,"as being boosted by Ignited Ground "}
 c["as being boosted by Ignited, Shocked, and Chilled Ground"]={nil,"as being boosted by Ignited, Shocked, and Chilled Ground "}

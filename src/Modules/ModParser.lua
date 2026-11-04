@@ -205,6 +205,7 @@ local modNameList = {
 	["mana cost efficiency"] = "ManaCostEfficiency",
 	["mana cost efficiency of skills"] = "ManaCostEfficiency",
 	["mana cost efficiency of attacks"] = { "ManaCostEfficiency", tag = { type = "SkillType", skillType = SkillType.Attack } },
+	["mana cost efficiency of spells"] = { "ManaCostEfficiency", tag = { type = "SkillType", skillType = SkillType.Spell } },
 	["life cost efficiency"] = "LifeCostEfficiency",
 	["life cost efficiency of skills"] = "LifeCostEfficiency",
 	["spirit cost efficiency"] = "SpiritCostEfficiency",
@@ -469,6 +470,7 @@ local modNameList = {
 	["effect of auras from your aura skills"] = { "AuraEffect", tag = { type = "SkillType", skillType = SkillType.Aura } },
 	["effect of non-curse auras you cast"] = { "AuraEffect", tagList = { { type = "SkillType", skillType = SkillType.Aura }, { type = "SkillType", skillType = SkillType.AppliesCurse, neg = true } } },
 	["effect of non-curse auras from your skills"] = { "AuraEffect", tagList = { { type = "SkillType", skillType = SkillType.Aura }, { type = "SkillType", skillType = SkillType.AppliesCurse, neg = true } } },
+	["magnitudes of non-curse auras from your skills"] = { "AuraEffect", tagList = { { type = "SkillType", skillType = SkillType.Aura }, { type = "SkillType", skillType = SkillType.AppliesCurse, neg = true } } },
 	["effect of non-curse auras from your skills on your minions"] = { "AuraEffectOnSelf", tagList = { { type = "SkillType", skillType = SkillType.Aura }, { type = "SkillType", skillType = SkillType.AppliesCurse, neg = true } }, addToMinion = true },
 	["effect of non-curse auras"] = { "AuraEffect", tag = { type = "SkillType", skillType = SkillType.AppliesCurse, neg = true } },
 	["effect of your curses"] = "CurseEffect",
@@ -2004,6 +2006,7 @@ local modTagList = {
 	["for each corpse consumed recently"] = { tag = { type = "Multiplier", var = "CorpseConsumedRecently" } },
 	["if you[' ]h?a?ve taunted an enemy recently"] = { tag = { type = "Condition", var = "TauntedEnemyRecently" } },
 	["if you[' ]h?a?ve used a skill recently"] = { tag = { type = "Condition", var = "UsedSkillRecently" } },
+	["if you've used a skill that requires glory in the past %d+ seconds"] = { tag = { type = "Condition", var = "UsedGlorySkillRecently" } },
 	["if you[' ]h?a?ve used a travel skill recently"] = { tag = { type = "Condition", var = "UsedTravelSkillRecently" } },
 	["if you[' ]h?a?ve reloaded recently"] = { tag = { type = "Condition", var = "ReloadedRecently" } },
 	["on skill use"] = { },
@@ -2427,6 +2430,8 @@ local specialModList = {
 	},
 	["leech life (%d+)%% slower"] = function(num) return {mod("LifeLeechRate", "INC", -num)} end,
 	["leech life (%d+)%% faster"] = function(num) return {mod("LifeLeechRate", "INC", num)} end,
+	["leech life (%d+)%% less quickly"] = function(num) return { mod("LifeLeechRate", "MORE", -num) } end,
+	["leech mana (%d+)%% slower"] = function(num) return { mod("ManaLeechRate", "INC", -num) } end,
 	["life regeneration is applied to energy shield instead"] = { flag("ZealotsOath") },
 	["mana recovery from regeneration is also applied to runic ward"] = { flag("ManaRegenerationRecoversWard") },
 	["excess life recovery from regeneration is applied to energy shield"] = { flag("ZealotsOath", { type = "Condition", var = "FullLife" }) },
@@ -2685,6 +2690,7 @@ local specialModList = {
 	["defend with (%d+)%% of armour during effect"] = function(num) return {
 		mod("ArmourDefense", "MAX", num - 100),
 	} end,
+	["grants onslaught during effect"] = { flag("Condition:Onslaught") },
 	["defend with (%d+)%% of armour while not on low energy shield"] = function(num) return {
 		mod("ArmourDefense", "MAX", num - 100, "Armour and Energy Shield Mastery", { type = "Condition", var = "LowEnergyShield", neg = true }),
 	} end,
@@ -2981,6 +2987,11 @@ local specialModList = {
 		mod("FireDamageTaken", "INC", -num, { type = "Condition", var = "HitByFireDamageRecently" }),
 		mod("ColdDamageTaken", "INC", -num, { type = "Condition", var = "HitByColdDamageRecently" }),
 		mod("LightningDamageTaken", "INC", -num, { type = "Condition", var = "HitByLightningDamageRecently" }),
+	} end,
+	["%+(%d+)%% to maximum resistances of each elemental damage type you have been hit with recently"] = function(num) return {
+		mod("FireResistMax", "BASE", num, { type = "Condition", var = "HitByFireDamageRecently" }),
+		mod("ColdResistMax", "BASE", num, { type = "Condition", var = "HitByColdDamageRecently" }),
+		mod("LightningResistMax", "BASE", num, { type = "Condition", var = "HitByLightningDamageRecently" }),
 	} end,
 	["gain convergence when you hit a unique enemy, no more than once every %d+ seconds"] = {
 		flag("Condition:CanGainConvergence"),
@@ -4742,6 +4753,7 @@ local specialModList = {
 	["hazards have (%d+)%% chance to rearm after they are triggered"] = function(num) return { mod("HazardRearmChance", "BASE", tonumber(num), { type = "SkillType", skillType = SkillType.Hazard })} end,
 	-- Totems
 	["can have up to (%d+) additional totems? summoned at a time"] = function(num) return { mod("ActiveTotemLimit", "BASE", num) } end,
+	["your totem limit is doubled"] = { flag("TotemLimitDoubled") },
 	["attack skills can have (%d+) additional totems? summoned at a time"] = function(num) return { mod("ActiveTotemLimit", "BASE", num, nil, 0, KeywordFlag.Attack) } end,
 	["can [hs][au][vm][em]o?n? 1 additional siege ballista totem per (%d+) dexterity"] = function(num) return { mod("ActiveBallistaLimit", "BASE", 1, { type = "SkillName", skillName = "Siege Ballista", includeTransfigured = true }, { type = "PerStat", stat = "Dex", div = num }) } end,
 	["totems fire (%d+) additional projectiles"] = function(num) return { mod("ProjectileCount", "BASE", num, nil, 0, KeywordFlag.Totem) } end,
