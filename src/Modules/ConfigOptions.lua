@@ -1681,6 +1681,18 @@ Huge sets the radius to 11.
 	{ var = "conditionBleedAggravated", type = "check", label = "Is the Bleed Aggravated?", ifMod = "BleedChance", tooltip = "Bleeding deals an extra 100% damage while the target is moving, or if the Bleeding is Aggravated", apply = function(val, modList, enemyModList)
 		enemyModList:NewMod("Condition:BleedAggravated", "FLAG", true, "Config", { type = "Condition", var = "Effective" })
 	end },
+	{ var = "conditionEnemyBloodBoils", type = "check", label = "Is the enemy affected by Blood Boils?", ifEnemyCond = "BloodBoils", apply = function(val, modList, enemyModList)
+		enemyModList:NewMod("Condition:BloodBoils", "FLAG", true, "Config", { type = "Condition", var = "Effective" })
+	end },
+	{ var = "multiplierFireAdaptation", type = "count", label = "# of Fire Adaptations:", ifMult = "FireAdaptation", apply = function(val, modList, enemyModList)
+		modList:NewMod("Multiplier:FireAdaptation", "BASE", val, "Config", { type = "Condition", var = "Combat" })
+	end },
+	{ var = "multiplierColdAdaptation", type = "count", label = "# of Cold Adaptations:", ifMult = "ColdAdaptation", apply = function(val, modList, enemyModList)
+		modList:NewMod("Multiplier:ColdAdaptation", "BASE", val, "Config", { type = "Condition", var = "Combat" })
+	end },
+	{ var = "multiplierLightningAdaptation", type = "count", label = "# of Lightning Adaptations:", ifMult = "LightningAdaptation", apply = function(val, modList, enemyModList)
+		modList:NewMod("Multiplier:LightningAdaptation", "BASE", val, "Config", { type = "Condition", var = "Combat" })
+	end },
 	{ var = "multiplierEnemyMissingConcentration", type = "count", label = "Enemy's missing Concentration %:", ifMult = "EnemyMissingConcentrationPercent", tooltip = "How much of the enemy's maximum Concentration you have broken (0-100), for Witchhunter's No Mercy.", apply = function(val, modList, enemyModList)
 		modList:NewMod("Multiplier:EnemyMissingConcentrationPercent", "BASE", m_min(m_max(val, 0), 100), "Config", { type = "Condition", var = "Effective" })
 	end },

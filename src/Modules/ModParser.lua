@@ -3474,6 +3474,19 @@ local specialModList = {
 	["maximum mana is replaced by twice as much maximum infernal flame"] = { flag("ManaReplacedByInfernalFlame") },
 	["gain infernal flame instead of spending mana for skill costs"] = { flag("InfernalFlameInsteadOfManaCost") },
 	-- Druid -- Shaman
+	["(%d+)%% less damage taken of each elemental damage type per matching adaptation"] = function(num)
+		local mods = { }
+		for _, dmg in ipairs({ "Fire", "Cold", "Lightning" }) do
+			t_insert(mods, mod(dmg .. "DamageTaken", "MORE", -num, { type = "Multiplier", var = dmg .. "Adaptation" }, { type = "Condition", var = "DoubleAdaptationEffect", neg = true }))
+			t_insert(mods, mod(dmg .. "DamageTaken", "MORE", -2 * num, { type = "Multiplier", var = dmg .. "Adaptation" }, { type = "Condition", var = "DoubleAdaptationEffect" }))
+		end
+		return mods
+	end,
+	["double adaptation effect"] = { flag("Condition:DoubleAdaptationEffect") },
+	-- Huntress -- Ritualist
+	["(%d+)%% more damage against enemies affected by blood boils"] = function(num) return {
+		mod("Damage", "MORE", num, { type = "ActorCondition", actor = "enemy", var = "BloodBoils" }),
+	} end,
 	["enemies in your presence have exposure"] = {
 		mod("EnemyModifier", "LIST", { mod = mod("FireExposure", "BASE", 20, { type = "ActorCondition", actor = "enemy", var = "EnemyInPresence" }) }),
 		mod("EnemyModifier", "LIST", { mod = mod("ColdExposure", "BASE", 20, { type = "ActorCondition", actor = "enemy", var = "EnemyInPresence" }) }),

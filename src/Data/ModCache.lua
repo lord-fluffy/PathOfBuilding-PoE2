@@ -1716,7 +1716,7 @@ c["10% increased maximum Energy Shield if you've consumed a Power Charge Recentl
 c["10% increased maximum Life"]={{[1]={flags=0,keywordFlags=0,name="Life",type="INC",value=10}},nil}
 c["10% increased maximum Mana"]={{[1]={flags=0,keywordFlags=0,name="Mana",type="INC",value=10}},nil}
 c["10% increased total Power counted by Warcries"]={{[1]={flags=0,keywordFlags=0,name="WarcryPower",type="INC",value=10}},nil}
-c["10% less Damage taken of each Elemental Damage Type per matching Adaptation"]={{[1]={flags=0,keywordFlags=0,name="DamageTaken",type="MORE",value=-10}},"  of each Elemental Damage Type per matching Adaptation "}
+c["10% less Damage taken of each Elemental Damage Type per matching Adaptation"]={{[1]={[1]={type="Multiplier",var="FireAdaptation"},[2]={neg=true,type="Condition",var="DoubleAdaptationEffect"},flags=0,keywordFlags=0,name="FireDamageTaken",type="MORE",value=-10},[2]={[1]={type="Multiplier",var="FireAdaptation"},[2]={type="Condition",var="DoubleAdaptationEffect"},flags=0,keywordFlags=0,name="FireDamageTaken",type="MORE",value=-20},[3]={[1]={type="Multiplier",var="ColdAdaptation"},[2]={neg=true,type="Condition",var="DoubleAdaptationEffect"},flags=0,keywordFlags=0,name="ColdDamageTaken",type="MORE",value=-10},[4]={[1]={type="Multiplier",var="ColdAdaptation"},[2]={type="Condition",var="DoubleAdaptationEffect"},flags=0,keywordFlags=0,name="ColdDamageTaken",type="MORE",value=-20},[5]={[1]={type="Multiplier",var="LightningAdaptation"},[2]={neg=true,type="Condition",var="DoubleAdaptationEffect"},flags=0,keywordFlags=0,name="LightningDamageTaken",type="MORE",value=-10},[6]={[1]={type="Multiplier",var="LightningAdaptation"},[2]={type="Condition",var="DoubleAdaptationEffect"},flags=0,keywordFlags=0,name="LightningDamageTaken",type="MORE",value=-20}},nil}
 c["10% less Elemental Damage taken"]={{[1]={flags=0,keywordFlags=0,name="ElementalDamageTaken",type="MORE",value=-10}},nil}
 c["10% less Movement and Skill Speed per Dodge Roll in the past 20 seconds"]={{[1]={flags=0,keywordFlags=0,name="Speed",type="MORE",value=-10},[2]={flags=0,keywordFlags=0,name="WarcrySpeed",type="MORE",value=-10},[3]={flags=0,keywordFlags=0,name="TotemPlacementSpeed",type="MORE",value=-10}}," Movement and  per Dodge Roll in the past 20 seconds "}
 c["10% more Maximum Lightning Damage"]={{[1]={flags=0,keywordFlags=0,name="MaxLightningDamage",type="MORE",value=10}},nil}
@@ -2451,8 +2451,7 @@ c["15% less Movement Speed"]={{[1]={flags=0,keywordFlags=0,name="MovementSpeed",
 c["15% less Spirit"]={{[1]={flags=0,keywordFlags=0,name="Spirit",type="MORE",value=-15}},nil}
 c["15% less maximum Life"]={{[1]={flags=0,keywordFlags=0,name="Life",type="MORE",value=-15}},nil}
 c["15% less maximum Mana"]={{[1]={flags=0,keywordFlags=0,name="Mana",type="MORE",value=-15}},nil}
-c["15% more Damage against Enemies affected by Blood Boils"]={{[1]={flags=0,keywordFlags=0,name="Damage",type="MORE",value=15}},"  against Enemies affected by Blood Boils "}
-c["15% more Damage against Enemies affected by Blood Boils Grants Skill: Blood Boil"]={{[1]={[1]={includeTransfigured=true,skillName="Blood Boil",type="SkillName"},flags=0,keywordFlags=0,name="Damage",type="MORE",value=15}},"  against Enemies affected by Blood Boils Grants Skill:"}
+c["15% more Damage against Enemies affected by Blood Boils"]={{[1]={[1]={actor="enemy",type="ActorCondition",var="BloodBoils"},flags=0,keywordFlags=0,name="Damage",type="MORE",value=15}},nil}
 c["15% more Maximum Life"]={{[1]={flags=0,keywordFlags=0,name="Life",type="MORE",value=15}},nil}
 c["15% of Damage Taken Recouped as Life, Mana and Energy Shield"]={{[1]={flags=0,keywordFlags=0,name="LifeRecoup",type="BASE",value=15},[2]={flags=0,keywordFlags=0,name="EnergyShieldRecoup",type="BASE",value=15},[3]={flags=0,keywordFlags=0,name="ManaRecoup",type="BASE",value=15}},nil}
 c["15% of Damage from Deflected Hits is taken from Damageable Companion's Life before you"]={{[1]={flags=0,keywordFlags=0,name="TakenFromCompanionBeforeYouFromDeflected",type="BASE",value=15}},nil}
@@ -5001,8 +5000,8 @@ c["75% increased Mana Regeneration Rate"]={{[1]={flags=0,keywordFlags=0,name="Ma
 c["75% increased Melee Damage with Spears while Surrounded"]={{[1]={[1]={type="Condition",var="Surrounded"},flags=268435716,keywordFlags=0,name="Damage",type="INC",value=75}},nil}
 c["75% increased Physical Damage"]={{[1]={flags=0,keywordFlags=0,name="PhysicalDamage",type="INC",value=75}},nil}
 c["75% increased Spell Damage"]={{[1]={flags=2,keywordFlags=0,name="Damage",type="INC",value=75}},nil}
-end)();(function()
 c["75% increased Spirit"]={{[1]={flags=0,keywordFlags=0,name="Spirit",type="INC",value=75}},nil}
+end)();(function()
 c["75% increased Thorns damage if you've Blocked Recently"]={{[1]={[1]={type="Condition",var="BlockedRecently"},flags=32,keywordFlags=0,name="Damage",type="INC",value=75}},nil}
 c["75% increased chance to Shock"]={{[1]={flags=0,keywordFlags=0,name="EnemyShockChance",type="INC",value=75}},nil}
 c["75% increased effect of Socketed Augment Items"]={{[1]={flags=0,keywordFlags=0,name="SocketedAugmentItemEffect",type="INC",value=75}},nil}
@@ -7221,7 +7220,7 @@ c["Dodging can expend up to 2 Owl Feathers, granting Primal Bounty 100% more"]={
 c["Dodging can expend up to 2 Owl Feathers, granting Primal Bounty 100% more Empowerment effect per additional Feather expended"]={nil,"Dodging can expend up to 2 Owl Feathers, granting Primal Bounty 100% more Empowerment effect per additional Feather expended "}
 c["Dodging can expend up to 2 Owl Feathers, granting Primal Bounty 100% more Empowerment effect per additional Feather expended Gain Owl Feathers 50% faster"]={nil,"Dodging can expend up to 2 Owl Feathers, granting Primal Bounty 100% more Empowerment effect per additional Feather expended Gain Owl Feathers 50% faster "}
 c["Double Activation Delay of Curses"]={{[1]={flags=0,keywordFlags=0,name="CurseDelay",type="MORE",value=100}},nil}
-c["Double Adaptation Effect"]={{[1]={[1]={globalLimit=100,globalLimitKey="LocalEffectDoubledLimit",type="Multiplier",var="LocalEffectDoubled"},flags=0,keywordFlags=0,name="LocalEffect",type="MORE",value=100},[2]={flags=0,keywordFlags=0,name="Multiplier:LocalEffectDoubled",type="OVERRIDE",value=1}}," Adaptation  "}
+c["Double Adaptation Effect"]={{[1]={flags=0,keywordFlags=0,name="Condition:DoubleAdaptationEffect",type="FLAG",value=true}},nil}
 c["Double Stun Threshold while Shield is Raised"]={{[1]={[1]={globalLimit=100,globalLimitKey="StunThresholdDoubledLimit",type="Multiplier",var="StunThresholdDoubled"},flags=0,keywordFlags=0,name="StunThreshold",type="MORE",value=100},[2]={flags=0,keywordFlags=0,name="Multiplier:StunThresholdDoubled",type="OVERRIDE",value=1}},"  while Shield is Raised "}
 c["Double the number of your Poisons that targets can be affected by at the same time"]={{[1]={flags=0,keywordFlags=0,name="PoisonCanStack",type="FLAG",value=true},[2]={flags=0,keywordFlags=0,name="PoisonStacks",type="MORE",value=100}},nil}
 c["Drop Ignited Ground while moving, which lasts 8 seconds and Ignites as though dealing Fire Damage equal to 10% of your maximum Life"]={nil,"Drop Ignited Ground while moving, which lasts 8 seconds and Ignites as though dealing Fire Damage equal to 10% of your maximum Life "}
@@ -9992,21 +9991,19 @@ c["Your speed is Unaffected by Slows while Sprinting 10% less Movement and Skill
 c["Your speed is unaffected by Slows"]={{[1]={flags=0,keywordFlags=0,name="UnaffectedBySlows",type="FLAG",value=true}},nil}
 c["Your spells have 100% chance to Shock against Frozen Enemies"]={nil,"Your spells have 100% chance to Shock against Frozen Enemies "}
 c["Zealot's Oath"]={{[1]={flags=0,keywordFlags=0,name="Keystone",type="LIST",value="Zealot's Oath"},[2]={flags=0,keywordFlags=0,name="Condition:HaveZealot'sOath",type="FLAG",value=true}},nil}
-end)();(function()
 c["Zealot's Oath during Effect"]={{[1]={[1]={type="Condition",var="UsingFlask"},flags=0,keywordFlags=0,name="ZealotsOath",type="FLAG",value=true}},nil}
 c["additional Elemental Infusion of the same type"]={nil,"additional Elemental Infusion of the same type "}
 c["additional Rune-only sockets:"]={{},nil}
-end)();(function()
 c["as being boosted by Chilled Ground"]={nil,"as being boosted by Chilled Ground "}
 c["as being boosted by Ignited Ground"]={nil,"as being boosted by Ignited Ground "}
 c["as being boosted by Ignited, Shocked, and Chilled Ground"]={nil,"as being boosted by Ignited, Shocked, and Chilled Ground "}
-end)();(function()
 c["as being boosted by Shocked Ground"]={nil,"as being boosted by Shocked Ground "}
 c["being Shapeshifted for at least 8 seconds"]={nil,"being Shapeshifted for at least 8 seconds "}
 c["for 4 seconds, every 0.25 seconds while raised"]={nil,"for 4 seconds, every 0.25 seconds while raised "}
 c["gain 6 Cold Surges or 6 Fire Surges"]={{}," Cold Surges or 6 Fire Surges "}
 c["the enemy's Power for 20 seconds, up to a total of 500"]={nil,"the enemy's Power for 20 seconds, up to a total of 500 "}
 c["their Explicit Modifiers are transformed into more powerful related Modifiers"]={nil,"their Explicit Modifiers are transformed into more powerful related Modifiers "}
+end)();(function()
 c["their Explicit Modifiers are transformed into more powerful related Modifiers Ignore Attribute Requirements to equip Gloves"]={nil,"their Explicit Modifiers are transformed into more powerful related Modifiers Ignore Attribute Requirements to equip Gloves "}
 c["until you take no Damage to Life for 3 seconds"]={nil,"until you take no Damage to Life for 3 seconds "}
 c["until you take no Damage to Life for 5 seconds"]={nil,"until you take no Damage to Life for 5 seconds "}
