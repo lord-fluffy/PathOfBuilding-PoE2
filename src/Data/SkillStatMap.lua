@@ -229,6 +229,26 @@ return function(mod, flag, skill)
 ["display_mirage_warriors_no_spirit_strikes"] = {
 	skill("triggeredBySaviour", true, { type = "SkillType", skillType = SkillType.Attack } ),
 },
+-- PoE2 meta gems: Energy
+["cast_on_crit_gain_X_centienergy_per_monster_power_on_crit"] = {
+	skill("energyPerPowerOnCrit", nil),
+	div = 100,
+},
+["generic_ongoing_trigger_1_maximum_energy_per_Xms_total_cast_time"] = {
+	skill("maximumEnergyPerMsCastTime", nil),
+},
+["generic_ongoing_trigger_maximum_energy"] = {
+	skill("maximumEnergy", nil),
+},
+["energy_generated_+%"] = {
+	mod("EnergyGenerated", "INC", nil),
+},
+["active_skill_energy_generated_+%_final"] = {
+	mod("EnergyGenerated", "MORE", nil),
+},
+["skill_maximum_energy_+%"] = {
+	mod("MaximumEnergy", "INC", nil),
+},
 ["cast_spell_on_linked_attack_crit"] = {
 	skill("triggeredByCoc", true, { type = "SkillType", skillType = SkillType.Triggerable }, { type = "SkillType", skillType = SkillType.Spell }),
 	skill("triggerOnCrit", true, { type = "SkillType", skillType = SkillType.Triggerable }, { type = "SkillType", skillType = SkillType.Spell }),

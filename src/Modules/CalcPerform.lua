@@ -3513,6 +3513,7 @@ function calcs.perform(env, skipEHP)
 
 	-- TURNING OFF CALC TRIGGERS AND MIRAGES FOR TIME BEING
 	--calcs.triggers(env, env.player)
+	calcs.metaEnergyTrigger(env, env.player)
 	--if not calcs.mirages(env) then
 		calcs.offence(env, env.player, env.player.mainSkill)
 	--end
