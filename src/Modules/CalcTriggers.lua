@@ -1489,16 +1489,9 @@ local energySources = {
 		rate = function(cached) return (cached.HitSpeed or cached.Speed or 0) * (cached.HitChance or 100) / 100 end,
 		hit = function(output) return output.AverageHit or (output.MainHand and output.MainHand.AverageHit) or 0 end,   -- attacks keep it per hand
 	},
-	{
-		stat = "energyPerPowerOnShock", event = "Shock",
-		canCause = function(skill) return skill.skillTypes[SkillType.Attack] or skill.skillTypes[SkillType.Spell] end,
-		rate = function(cached) return (cached.HitSpeed or cached.Speed or 0) * (cached.HitChance or 100) / 100 * ((cached.Env.player.output.ShockChance or 0) / 100) end,
-	},
 }
--- Energy sources of these gems that aren't modelled yet, named in the breakdown
-local unmodelledSources = {
-	energyPerPowerOnIgnite = "Ignite", energyPerPowerOnFreeze = "Freeze",
-}
+-- A gem is only timed from Energy once every source it has is here: counting part of them gives a trigger rate
+-- far too low. Cast on Elemental Ailment (Ignite, Shock, Freeze) stays out until all three are modelled.
 
 -- The Energy-building meta gem a skill is socketed in, if any
 local function energyMetaGem(env, skill)
@@ -1622,11 +1615,6 @@ function calcs.metaEnergyTrigger(env, actor)
 		end
 		t_insert(breakdown.MetaEnergyPerEvent, s_format("x %.2f ^8(increased/more Energy)", energyMod))
 		t_insert(breakdown.MetaEnergyPerEvent, s_format("= %.2f ^8(rounded down to 0.01)", energy))
-		for stat, event in pairs(unmodelledSources) do
-			if meta.skillData[stat] then
-				t_insert(breakdown.MetaEnergyPerEvent, s_format("^8(Energy from %s is not counted yet)", event))
-			end
-		end
 		breakdown.MetaTriggerRate = {
 			s_format("%.2f ^8(%s %ss per second)", sourceRate, source.activeEffect.grantedEffect.name, src.event),
 			s_format("/ %d ^8(%ss to reach %.2f maximum Energy; excess Energy is lost)", eventsToTrigger, src.event, maxEnergy),
