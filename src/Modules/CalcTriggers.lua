@@ -1471,9 +1471,34 @@ function calcs.triggers(env, actor)
 end
 
 -- PoE2 meta gems build Energy and trigger all their socketed Spells on reaching maximum Energy.
--- Modelled so far: Cast on Critical. Its socketed Spells fire at
---   (Critical Hits per second of the skill that crits most often) / (Critical Hits needed to fill maximum Energy)
--- Energy past the maximum is discarded, so one Critical Hit triggers at most once.
+-- Their socketed Spells fire at
+--   (events per second from the skill that fills Energy fastest) / (events needed to reach maximum Energy)
+-- Energy past the maximum is discarded, so one event triggers at most once.
+-- Each source: the skill data the gem's stat sets, the skills that can cause it, how often they do, and how
+-- strong each event is (the gem text: "modified by the percentage of the enemy's Ailment Threshold the Hit will deal").
+local energySources = {
+	{
+		stat = "energyPerPowerOnCrit", event = "Critical Hit",
+		canCause = function(skill) return skill.skillTypes[SkillType.Attack] or skill.skillTypes[SkillType.Spell] end,
+		rate = function(cached) return (cached.HitSpeed or cached.Speed or 0) * (cached.CritChance or 0) / 100 end,
+		hit = function(output) return output.AverageCritHit or 0 end,
+	},
+	{
+		stat = "energyPerPowerOnMeleeHit", event = "Melee Hit",
+		canCause = function(skill) return skill.skillTypes[SkillType.Attack] and skill.skillTypes[SkillType.Melee] end,
+		rate = function(cached) return (cached.HitSpeed or cached.Speed or 0) * (cached.HitChance or 100) / 100 end,
+		hit = function(output) return output.AverageHit or (output.MainHand and output.MainHand.AverageHit) or 0 end,   -- attacks keep it per hand
+	},
+	{
+		stat = "energyPerPowerOnShock", event = "Shock",
+		canCause = function(skill) return skill.skillTypes[SkillType.Attack] or skill.skillTypes[SkillType.Spell] end,
+		rate = function(cached) return (cached.HitSpeed or cached.Speed or 0) * (cached.HitChance or 100) / 100 * ((cached.Env.player.output.ShockChance or 0) / 100) end,
+	},
+}
+-- Energy sources of these gems that aren't modelled yet, named in the breakdown
+local unmodelledSources = {
+	energyPerPowerOnIgnite = "Ignite", energyPerPowerOnFreeze = "Freeze",
+}
 
 -- The Energy-building meta gem a skill is socketed in, if any
 local function energyMetaGem(env, skill)
@@ -1481,17 +1506,23 @@ local function energyMetaGem(env, skill)
 		return
 	end
 	for _, other in ipairs(env.player.activeSkillList) do
-		if other ~= skill and other.socketGroup == skill.socketGroup and other.skillTypes[SkillType.Meta]
-			and (other.skillData.energyPerPowerOnCrit or other.skillData.maximumEnergy) then
-			return other
+		if other ~= skill and other.socketGroup == skill.socketGroup and other.skillTypes[SkillType.Meta] then
+			for _, src in ipairs(energySources) do
+				if other.skillData[src.stat] then
+					return other, src
+				end
+			end
 		end
 	end
 end
 
 function calcs.metaEnergyTrigger(env, actor)
 	local skill = actor.mainSkill
-	local meta = actor == env.player and skill and skill.skillTypes and skill.skillTypes[SkillType.Spell] and energyMetaGem(env, skill)
-	if not meta or not meta.skillData.energyPerPowerOnCrit then
+	local meta, src
+	if actor == env.player and skill and skill.skillTypes and skill.skillTypes[SkillType.Spell] then
+		meta, src = energyMetaGem(env, skill)
+	end
+	if not meta then
 		return
 	end
 	local output = actor.output
@@ -1514,40 +1545,47 @@ function calcs.metaEnergyTrigger(env, actor)
 	maxEnergy = maxEnergy * maxEnergyMod
 	output.MetaMaximumEnergy = maxEnergy
 
-	-- The skill outside meta gems that Critically Hits most often
-	local source, sourceCritRate, sourceOutput = nil, 0, nil
+	local power = m_max(env.player.modDB:Sum("BASE", nil, "Multiplier:EnemyPower"), 1)
+	local energyMod = calcLib.mod(meta.skillModList, meta.skillCfg, "EnergyGenerated")
+	local function energyPerEvent(sourceOutput)
+		local strength = 1
+		if src.hit then
+			strength = src.hit(sourceOutput) / (sourceOutput.EnemyAilmentThreshold or 1)
+		end
+		return m_floor(meta.skillData[src.stat] * power * strength * energyMod * 100) / 100, strength
+	end
+
+	-- The skill outside meta gems that fills Energy fastest
+	local source, sourceRate, sourceOutput, bestEnergyRate = nil, 0, nil, 0
 	for _, other in ipairs(env.player.activeSkillList) do
-		if other ~= skill and not other.skillTypes[SkillType.Meta] and (other.skillTypes[SkillType.Attack] or other.skillTypes[SkillType.Spell])
+		if other ~= skill and not other.skillTypes[SkillType.Meta] and src.canCause(other)
 			and not energyMetaGem(env, other) and not (other.skillFlags and other.skillFlags.disable) then
 			local uuid = cacheSkillUUID(other, env)
 			if not GlobalCache.cachedData[env.mode][uuid] or env.mode == "CALCULATOR" then
 				calcs.buildActiveSkill(env, env.mode, other, uuid)
 			end
 			local cached = GlobalCache.cachedData[env.mode][uuid]
-			local critRate = cached and (cached.HitSpeed or cached.Speed or 0) * (cached.CritChance or 0) / 100 or 0
-			if critRate > sourceCritRate then
-				source, sourceCritRate, sourceOutput = other, critRate, cached.Env.player.output
+			if cached then
+				local rate = src.rate(cached)
+				local energyRate = rate * energyPerEvent(cached.Env.player.output)
+				if energyRate > bestEnergyRate then
+					source, sourceRate, sourceOutput, bestEnergyRate = other, rate, cached.Env.player.output, energyRate
+				end
 			end
 		end
 	end
 
 	skill.skillData.triggered = true
-	skill.infoMessage = meta.activeEffect.grantedEffect.name .. "'s Trigger: " .. (source and source.activeEffect.grantedEffect.name or "no skill that Critically Hits")
+	skill.infoMessage = meta.activeEffect.grantedEffect.name .. "'s Trigger: " .. (source and source.activeEffect.grantedEffect.name or ("no skill that can " .. src.event))
 	if not source then
 		skill.skillData.triggerRate = 0
 		output.MetaTriggerRate = 0
 		return
 	end
 
-	-- Energy per Critical Hit: per enemy Power, modified by how much of the enemy's Ailment Threshold the Critical Hit deals
-	local power = m_max(env.player.modDB:Sum("BASE", nil, "Multiplier:EnemyPower"), 1)
-	local critHit = sourceOutput.AverageCritHit or 0
-	local threshold = sourceOutput.EnemyAilmentThreshold or 1
-	local hitStrength = critHit / threshold
-	local energyMod = calcLib.mod(meta.skillModList, meta.skillCfg, "EnergyGenerated")
-	local energyPerCrit = m_floor(meta.skillData.energyPerPowerOnCrit * power * hitStrength * energyMod * 100) / 100
-	local critsToTrigger = energyPerCrit > 0 and m_ceil(maxEnergy / energyPerCrit) or m_huge
-	local triggerRate = sourceCritRate / critsToTrigger
+	local energy, strength = energyPerEvent(sourceOutput)
+	local eventsToTrigger = energy > 0 and m_ceil(maxEnergy / energy) or m_huge
+	local triggerRate = sourceRate / eventsToTrigger
 	-- Triggered Spells still have their cooldowns
 	local cooldown = calcSkillCooldown(skill.skillModList, skill.skillCfg, skill.skillData)
 	local cooldownCap = cooldown and cooldown > 0 and 1 / cooldown
@@ -1557,9 +1595,9 @@ function calcs.metaEnergyTrigger(env, actor)
 	end
 
 	skill.skillData.triggerRate = triggerRate
-	output.MetaEnergyPerCrit = energyPerCrit
-	output.MetaCritsToTrigger = critsToTrigger
-	output.MetaSourceCritRate = sourceCritRate
+	output.MetaEnergyPerEvent = energy
+	output.MetaEventsToTrigger = eventsToTrigger
+	output.MetaEventRate = sourceRate
 	output.MetaTriggerRate = triggerRate
 	if breakdown then
 		if meta.skillData.maximumEnergy then
@@ -1574,16 +1612,24 @@ function calcs.metaEnergyTrigger(env, actor)
 		end
 		t_insert(breakdown.MetaMaximumEnergy, s_format("x %.2f ^8(increased/reduced maximum Energy)", maxEnergyMod))
 		t_insert(breakdown.MetaMaximumEnergy, s_format("= %.2f", maxEnergy))
-		breakdown.MetaEnergyPerCrit = {
-			s_format("%.2f ^8(base Energy per enemy Power)", meta.skillData.energyPerPowerOnCrit),
+		breakdown.MetaEnergyPerEvent = {
+			s_format("%.2f ^8(base Energy per enemy Power per %s)", meta.skillData[src.stat], src.event),
 			s_format("x %d ^8(enemy Power)", power),
-			s_format("x %.3f ^8(%s's average Critical Hit %.0f / enemy Ailment Threshold %.0f)", hitStrength, source.activeEffect.grantedEffect.name, critHit, threshold),
-			s_format("x %.2f ^8(increased/more Energy)", energyMod),
-			s_format("= %.2f ^8(rounded down to 0.01)", energyPerCrit),
 		}
+		if src.hit then
+			t_insert(breakdown.MetaEnergyPerEvent, s_format("x %.3f ^8(%s's average %s %.0f / enemy Ailment Threshold %.0f)", strength,
+				source.activeEffect.grantedEffect.name, src.event, src.hit(sourceOutput), sourceOutput.EnemyAilmentThreshold or 1))
+		end
+		t_insert(breakdown.MetaEnergyPerEvent, s_format("x %.2f ^8(increased/more Energy)", energyMod))
+		t_insert(breakdown.MetaEnergyPerEvent, s_format("= %.2f ^8(rounded down to 0.01)", energy))
+		for stat, event in pairs(unmodelledSources) do
+			if meta.skillData[stat] then
+				t_insert(breakdown.MetaEnergyPerEvent, s_format("^8(Energy from %s is not counted yet)", event))
+			end
+		end
 		breakdown.MetaTriggerRate = {
-			s_format("%.2f ^8(%s Critical Hits per second)", sourceCritRate, source.activeEffect.grantedEffect.name),
-			s_format("/ %d ^8(Critical Hits to reach %.2f maximum Energy; excess Energy is lost)", critsToTrigger, maxEnergy),
+			s_format("%.2f ^8(%s %ss per second)", sourceRate, source.activeEffect.grantedEffect.name, src.event),
+			s_format("/ %d ^8(%ss to reach %.2f maximum Energy; excess Energy is lost)", eventsToTrigger, src.event, maxEnergy),
 		}
 		if capped then
 			t_insert(breakdown.MetaTriggerRate, s_format("= %.2f ^8(capped by %s's %.2fs cooldown)", triggerRate, skill.activeEffect.grantedEffect.name, cooldown))
