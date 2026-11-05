@@ -3529,6 +3529,10 @@ local specialModList = {
 	["(%d+)%% of recovery applied instantly"] = function(num) return { mod("FlaskInstantRecovery", "BASE", num) } end,
 	["(%d+)%% of flask recovery applied instantly"] = function(num) return { mod("FlaskInstantRecovery", "BASE", num) } end,
 	["has no attribute requirements"] = { flag("NoAttributeRequirements") },
+	-- Way of the Stonefist: CalcSetup equips itemLib.fistsOfStone(gloves), whose base has no requirements
+	["gloves you equip have their base type transformed to fists of stone while equipped, and"] = { flag("GlovesBecomeFistsOfStone") },
+	["their explicit modifiers are transformed into more powerful related modifiers"] = { },
+	["ignore attribute requirements to equip gloves"] = { },
 	-- Skill modifiers
 	["([%+%-]%d+)%%? to level of ([%a%s]+) skills"] = function(num, _, name) return { mod("SupportedGemProperty", "LIST", { keyword = "grants_active_skill", key = "level", value = num }, 0, 0, { type = "SkillName", skillName = firstToUpper(name) } ),} end,
 	["([%+%-]%d+)%% to quality of all skills"] = function(num) return { mod("GemProperty", "LIST", { keyword = "grants_active_skill", key = "quality", value = num, keyOfScaledMod = "value"  }) } end,

@@ -11,6 +11,244 @@ local m_floor = math.floor
 
 itemLib = { }
 
+-- Way of the Stonefist: every modifier that changes on Fists of Stone has a twin in the game's data, named
+-- HandWraps + its own id, tier for tier (IncreasedLife1 -> HandWrapsIncreasedLife1). An item only carries text, so
+-- modifiers are recognised by their wording and values, whole: "(6-13)% increased Armour" alone and the same line
+-- beside "+# to maximum Life" are different modifiers, with different twins.
+local fistsOfStoneMods
+
+-- Twins with no stats: the game removes these modifiers. PoB's exporter skips a modifier without stats, so they're listed here
+-- (HandWraps ids in Data/Balance/Mods that ModItem and ModItemExclusive don't have).
+local FISTS_OF_STONE_REMOVES = {
+	"HandWrapsThunderfistUnique__1",
+	"HandWrapsUniqueCriticalStrikesCannotBeRerolled1",
+	"HandWrapsUniqueElementalDamageConvertToCold1",
+	"HandWrapsUniqueElementalDamageConvertToLightning1",
+	"HandWrapsUniqueShockImmunityWhenShocked1",
+	"HandWrapsUniqueStunDamageIncrease1",
+}
+
+local function numberTemplate(line)
+	return (line:gsub("%(%-?%d+%.?%d*%-%-?%d+%.?%d*%)", "#"):gsub("%-?%d+%.?%d*", "#"))
+end
+
+-- each number or range in a line, in order: { low, high }, as written
+local function lineNumbers(line)
+	local numbers, at = { }, 1
+	while true do
+		local rangeStart, rangeEnd, min, max = line:find("%((%-?%d+%.?%d*)%-(%-?%d+%.?%d*)%)", at)
+		local start, stop, value = line:find("(%-?%d+%.?%d*)", at)
+		if not start then
+			return numbers
+		end
+		if rangeStart and rangeStart < start then
+			t_insert(numbers, { tonumber(min), tonumber(max) })
+			at = rangeEnd + 1
+		else
+			t_insert(numbers, { tonumber(value), tonumber(value) })
+			at = stop + 1
+		end
+	end
+end
+
+local function getFistsOfStoneMods()
+	if fistsOfStoneMods then
+		return fistsOfStoneMods
+	end
+	fistsOfStoneMods = { }
+	local originals = { data.itemMods.Item, data.itemMods.Exclusive, data.itemMods.Desecrated }
+	local function addTwin(id, target)
+		local originalId = id:match("^HandWraps(.+)")
+		local original
+		for _, list in ipairs(originals) do
+			original = original or (originalId and list[originalId])
+		end
+		if original then
+			local entry = { id = id, unique = data.itemMods.Exclusive[originalId] ~= nil, original = { }, target = { } }
+			for _, line in ipairs(target) do
+				t_insert(entry.target, line)
+			end
+			for _, line in ipairs(original) do
+				t_insert(entry.original, { line = line, template = numberTemplate(line), numbers = lineNumbers(line) })
+			end
+			for _, line in ipairs(entry.original) do
+				fistsOfStoneMods[line.template] = fistsOfStoneMods[line.template] or { }
+				t_insert(fistsOfStoneMods[line.template], entry)
+			end
+		end
+	end
+	for _, source in ipairs({ data.itemMods.Item, data.itemMods.Exclusive }) do
+		for id, target in pairs(source) do
+			addTwin(id, target)
+		end
+	end
+	for _, id in ipairs(FISTS_OF_STONE_REMOVES) do
+		addTwin(id, { })
+	end
+	return fistsOfStoneMods
+end
+
+
+local function numbersFit(numbers, values)
+	if #numbers ~= #values then
+		return false
+	end
+	for i, number in ipairs(numbers) do
+		local low, high = m_min(number[1], number[2]), m_max(number[1], number[2])
+		if values[i][1] < low - 0.001 or values[i][1] > high + 0.001 then
+			return false
+		end
+	end
+	return true
+end
+
+-- How far through its range a line rolled, carried over to the twin; the middle for a modifier with nothing to roll
+local function rollOf(numbers, values)
+	for i, number in ipairs(numbers) do
+		if number[1] ~= number[2] then
+			return (values[i][1] - number[1]) / (number[2] - number[1])
+		end
+	end
+	return 0.5
+end
+
+local function rangeWidth(entry)
+	local width = 0
+	for _, line in ipairs(entry.original) do
+		for _, number in ipairs(line.numbers) do
+			width = width + m_max(number[1], number[2]) - m_min(number[1], number[2])
+		end
+	end
+	return width
+end
+
+-- The copy of a pair of gloves that Way of the Stonefist equips. Lines without a twin stay as they are.
+function itemLib.fistsOfStone(item)
+	if not item.base or item.base.type ~= "Gloves" or item.baseName:match("Fists of Stone") then
+		return item
+	end
+	if item.fistsOfStone and item.fistsOfStoneFrom == item.raw .. tostring(item.variant) then
+		return item.fistsOfStone
+	end
+	local baseName = item.base.tags and item.base.tags.runeforged and "Runeforged Fists of Stone" or "Fists of Stone"
+	local base = data.itemBases[baseName]
+	if not base then
+		return item
+	end
+	local copy = new("Item"):Item(item.raw)
+	copy.variant = item.variant
+
+	local mods = getFistsOfStoneMods()
+	local isUnique = item.rarity == "UNIQUE" or item.rarity == "RELIC"
+	local active = { }
+	for _, modLine in ipairs(copy.explicitModLines) do
+		if not copy.variant or not modLine.variantList or modLine.variantList[copy.variant] then
+			local rolled = modLine.range and itemLib.applyRange(modLine.line, modLine.range) or modLine.line
+			t_insert(active, { modLine = modLine, template = numberTemplate(rolled), values = lineNumbers(rolled) })
+		end
+	end
+
+	-- every modifier whose whole text is on the item
+	local matches, seen = { }, { }
+	for _, line in ipairs(active) do
+		for _, entry in ipairs(mods[line.template] or { }) do
+			if not seen[entry] and entry.unique == isUnique then
+				seen[entry] = true
+				local fits = true
+				for _, wanted in ipairs(entry.original) do
+					local found = false
+					for _, other in ipairs(active) do
+						found = found or (other.template == wanted.template and numbersFit(wanted.numbers, other.values))
+					end
+					fits = fits and found
+				end
+				if fits then
+					t_insert(matches, entry)
+				end
+			end
+		end
+	end
+	-- hybrids before the single lines inside them, then the tightest fit; the id settles the rest, so the same item
+	-- always converts the same way
+	table.sort(matches, function(a, b)
+		if #a.original ~= #b.original then
+			return #a.original > #b.original
+		end
+		local widthA, widthB = rangeWidth(a), rangeWidth(b)
+		if widthA ~= widthB then
+			return widthA < widthB
+		end
+		return a.id < b.id
+	end)
+
+	local replaced, targets = { }, { }
+	for _, entry in ipairs(matches) do
+		local taken = { }
+		for _, wanted in ipairs(entry.original) do
+			local hit
+			for _, other in ipairs(active) do
+				if not hit and not replaced[other] and not taken[other] and other.template == wanted.template and numbersFit(wanted.numbers, other.values) then
+					hit = other
+				end
+			end
+			if not hit then
+				taken = nil
+				break
+			end
+			taken[hit] = wanted
+		end
+		if taken then
+			local first
+			for _, other in ipairs(active) do
+				if taken[other] then
+					replaced[other] = true
+					first = first or other
+				end
+			end
+			local wanted = taken[first]
+			targets[first.modLine] = { entry = entry, roll = rollOf(wanted.numbers, first.values) }
+		end
+	end
+
+	local dropped = { }
+	for line in pairs(replaced) do
+		dropped[line.modLine] = true
+	end
+	local explicit = { }
+	for _, modLine in ipairs(copy.explicitModLines) do
+		local target = targets[modLine]
+		if target then
+			for _, line in ipairs(target.entry.target) do
+				t_insert(explicit, { line = itemLib.applyRange(line, target.roll), variantList = modLine.variantList })
+			end
+		elseif not dropped[modLine] then
+			t_insert(explicit, modLine)
+		end
+	end
+	copy.explicitModLines = explicit
+	copy.prefixes, copy.suffixes, copy.crafted = nil, nil, nil
+
+	-- the old base's implicits go, the new base's come
+	local implicit, oldBase = { }, { }
+	for line in (item.base.implicit or ""):gmatch("[^\n]+") do
+		oldBase[line] = true
+	end
+	for _, modLine in ipairs(copy.implicitModLines) do
+		if not oldBase[modLine.line] then
+			t_insert(implicit, modLine)
+		end
+	end
+	for line in (base.implicit or ""):gsub("{unscalable}", ""):gmatch("[^\n]+") do
+		t_insert(implicit, { line = line })
+	end
+	copy.implicitModLines = implicit
+
+	copy.baseName, copy.base, copy.armourData, copy.baseLines = baseName, base, nil, nil
+	copy:BuildAndParseRaw()
+	item.fistsOfStone, item.fistsOfStoneFrom = copy, item.raw .. tostring(item.variant)
+	return copy
+end
+
 local function addRuneforgingBaseMappings(item, bases)
 	-- Older records can omit the current variant's base tag and rely on the header.
 	-- Make that fallback explicit so switching back from a crafted base is stable.

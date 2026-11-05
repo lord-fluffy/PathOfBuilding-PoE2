@@ -1225,6 +1225,9 @@ function calcs.initEnv(build, mode, override, specEnv)
 			else
 				item = build.itemsTab.items[slot.selItemId]
 			end
+			if slotName == "Gloves" and item and nodesModsList:Flag(nil, "GlovesBecomeFistsOfStone") then
+				item = itemLib.fistsOfStone(item)
+			end
 			-- if we are replacing the main hand weapon, we should unequip the off hand weapon if it's not allowed
 			local overrideTwoHand = override.repItem and override.repItem.base.type and not (env.data.weaponTypeInfo[override.repItem.base.type] or {}).oneHand
 			if overrideTwoHand and override.repSlotName and override.repSlotName:match("^Weapon 1") and slotName:match("^Weapon 2") then

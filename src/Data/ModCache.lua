@@ -7877,9 +7877,7 @@ c["Glorifying the defilement of 8000 souls in tribute to Kulemak"]={{[1]={flags=
 c["Glorifying the defilement of 8000 souls in tribute to Kurgal"]={{[1]={flags=0,keywordFlags=0,name="JewelData",type="LIST",value={key="conqueredBy",value={conqueror={id=3,type="abyss"},id=8000}}}},nil}
 c["Glorifying the defilement of 8000 souls in tribute to Tecrod"]={{[1]={flags=0,keywordFlags=0,name="JewelData",type="LIST",value={key="conqueredBy",value={conqueror={id=4,type="abyss"},id=8000}}}},nil}
 c["Glorifying the defilement of 8000 souls in tribute to Ulaman"]={{[1]={flags=0,keywordFlags=0,name="JewelData",type="LIST",value={key="conqueredBy",value={conqueror={id=5,type="abyss"},id=8000}}}},nil}
-c["Gloves you equip have their Base Type transformed to Fists of Stone while equipped, and"]={nil,"Gloves you equip have their Base Type transformed to Fists of Stone while equipped, and "}
-c["Gloves you equip have their Base Type transformed to Fists of Stone while equipped, and their Explicit Modifiers are transformed into more powerful related Modifiers"]={nil,"Gloves you equip have their Base Type transformed to Fists of Stone while equipped, and their Explicit Modifiers are transformed into more powerful related Modifiers "}
-c["Gloves you equip have their Base Type transformed to Fists of Stone while equipped, and their Explicit Modifiers are transformed into more powerful related Modifiers Ignore Attribute Requirements to equip Gloves"]={nil,"Gloves you equip have their Base Type transformed to Fists of Stone while equipped, and their Explicit Modifiers are transformed into more powerful related Modifiers Ignore Attribute Requirements to equip Gloves "}
+c["Gloves you equip have their Base Type transformed to Fists of Stone while equipped, and"]={{[1]={flags=0,keywordFlags=0,name="GlovesBecomeFistsOfStone",type="FLAG",value=true}},nil}
 c["Glows while in an Area containing a Unique Fish"]={nil,"Glows while in an Area containing a Unique Fish "}
 c["Golden Radiance"]={nil,"Golden Radiance "}
 c["Golem Skills have 25% increased Cooldown Recovery Rate"]={{[1]={[1]={skillType=51,type="SkillType"},flags=0,keywordFlags=0,name="CooldownRecovery",type="INC",value=25}},nil}
@@ -8277,7 +8275,7 @@ c["Ignites you inflict spread to other Enemies that stay within 1.5 metres for 1
 c["Ignites you inflict spread to other Enemies that stay within 1.5 metres for 1 second You gain Onslaught for 4 seconds on Kill"]={nil,"Ignites you inflict spread to other Enemies that stay within 1.5 metres for 1 second You gain Onslaught for 4 seconds on Kill "}
 c["Ignites you inflict with Attacks deal Damage 35% faster"]={{[1]={flags=1,keywordFlags=0,name="IgniteFaster",type="INC",value=35}},nil}
 c["Ignore Attribute Requirements"]={{[1]={flags=0,keywordFlags=0,name="IgnoreAttributeRequirements",type="FLAG",value=true}},nil}
-c["Ignore Attribute Requirements to equip Gloves"]={nil,"Ignore Attribute Requirements to equip Gloves "}
+c["Ignore Attribute Requirements to equip Gloves"]={{},nil}
 c["Ignore Strength Requirement of Melee Weapons and Melee Skills"]={nil,"Ignore Strength Requirement of Melee Weapons and Melee Skills "}
 c["Ignore Warcry Cooldowns"]={{[1]={[1]={skillType=63,type="SkillType"},flags=0,keywordFlags=0,name="CooldownRecovery",type="OVERRIDE",value=0}},nil}
 c["Ignore all Movement Penalties from Armour"]={{[1]={flags=0,keywordFlags=0,name="Condition:IgnoreMovementPenalties",type="FLAG",value=true}},nil}
@@ -10003,9 +10001,9 @@ c["Your speed is Unaffected by Slows while Sprinting"]={nil,"Your speed is Unaff
 c["Your speed is Unaffected by Slows while Sprinting 10% less Movement and Skill Speed per Dodge Roll in the past 20 seconds"]={nil,"Your speed is Unaffected by Slows while Sprinting 10% less Movement and Skill Speed per Dodge Roll in the past 20 seconds "}
 c["Your speed is unaffected by Slows"]={{[1]={flags=0,keywordFlags=0,name="UnaffectedBySlows",type="FLAG",value=true}},nil}
 c["Your spells have 100% chance to Shock against Frozen Enemies"]={nil,"Your spells have 100% chance to Shock against Frozen Enemies "}
-end)();(function()
 c["Zealot's Oath"]={{[1]={flags=0,keywordFlags=0,name="Keystone",type="LIST",value="Zealot's Oath"},[2]={flags=0,keywordFlags=0,name="Condition:HaveZealot'sOath",type="FLAG",value=true}},nil}
 c["Zealot's Oath during Effect"]={{[1]={[1]={type="Condition",var="UsingFlask"},flags=0,keywordFlags=0,name="ZealotsOath",type="FLAG",value=true}},nil}
+end)();(function()
 c["additional Elemental Infusion of the same type"]={nil,"additional Elemental Infusion of the same type "}
 c["additional Rune-only sockets:"]={{},nil}
 c["as being boosted by Chilled Ground"]={nil,"as being boosted by Chilled Ground "}
@@ -10016,8 +10014,7 @@ c["being Shapeshifted for at least 8 seconds"]={nil,"being Shapeshifted for at l
 c["for 4 seconds, every 0.25 seconds while raised"]={nil,"for 4 seconds, every 0.25 seconds while raised "}
 c["gain 6 Cold Surges or 6 Fire Surges"]={{}," Cold Surges or 6 Fire Surges "}
 c["the enemy's Power for 20 seconds, up to a total of 500"]={nil,"the enemy's Power for 20 seconds, up to a total of 500 "}
-c["their Explicit Modifiers are transformed into more powerful related Modifiers"]={nil,"their Explicit Modifiers are transformed into more powerful related Modifiers "}
-c["their Explicit Modifiers are transformed into more powerful related Modifiers Ignore Attribute Requirements to equip Gloves"]={nil,"their Explicit Modifiers are transformed into more powerful related Modifiers Ignore Attribute Requirements to equip Gloves "}
+c["their Explicit Modifiers are transformed into more powerful related Modifiers"]={{},nil}
 c["until you take no Damage to Life for 3 seconds"]={nil,"until you take no Damage to Life for 3 seconds "}
 c["until you take no Damage to Life for 5 seconds"]={nil,"until you take no Damage to Life for 5 seconds "}
 c["until you take no Damage to Life for 5 seconds Life that would be lost by taking Damage is instead Reserved"]={nil,"until you take no Damage to Life for 5 seconds Life that would be lost by taking Damage is instead Reserved "}
